@@ -10,5 +10,4 @@ def handler(event):
     # Return the result in the expected format
     return {"result": input_data}
 
-if __name__ == '__main__':
-  runpod.serverless.start({"handler": handler})  # Required
+runpod.serverless.start({"handler": handler})  # Required
