@@ -6,4 +6,4 @@ RUN pip install --no-cache-dir runpod
 
 COPY handler.py /
 
-CMD ["python3", "-u", "rp_handler.py"]
+CMD ["python3", "-u", "/handler.py"]
