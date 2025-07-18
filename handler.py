@@ -7,8 +7,8 @@ def handler(event):
     # Process the input (replace this with your own code)
     # result = process_data(input_data)
     
-    # Return the result
-    return input_data
+    # Return the result in the expected format
+    return {"result": input_data}
 
 if __name__ == '__main__':
   runpod.serverless.start({"handler": handler})  # Required
