@@ -1,0 +1,50 @@
+# .github/workflows/pr-review.yml
+name: PR Review Commenter
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  review-pr:
+    runs-on: ubuntu-latest
+
+    permissions:
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Get PR diff
+        id: pr_diff
+        run: |
+          DIFF=$(gh pr diff "${{ github.event.pull_request.number }}" --repo ${{ github.repository }})
+          echo "diff<<EOF" >> $GITHUB_OUTPUT
+          echo "$DIFF" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Call external API for review
+        id: review_api
+        run: |
+          RESPONSE=$(curl -s -X POST https://api.runpod.ai/v2/x3oz7vmgh6c1k3/runsync \
+            -H "Authorization: Bearer ${{ secrets.RUNPOD_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"diff\": \"${{ steps.pr_diff.outputs.diff }}\"}")
+
+          echo "Full response: $RESPONSE"
+          COMMENT=$(echo "$RESPONSE" | jq -r '.output.result')
+          echo "comment=$COMMENT" >> $GITHUB_OUTPUT
+        env:
+          RUNPOD_TOKEN: ${{ secrets.RUNPOD_TOKEN }}
+
+      - name: Post comment on PR
+        run: |
+          gh pr comment "${{ github.event.pull_request.number }}" \
+            --body "${{ steps.review_api.outputs.comment }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
