@@ -13,8 +13,9 @@ def generate_code(prompt: str) -> str:
     model = AutoModelForCausalLM.from_pretrained(
         "deepseek-ai/deepseek-coder-6.7b-instruct", trust_remote_code=True, torch_dtype=torch.bfloat16, cache_dir=cache_dir).cuda()
 
-    input_ids = tokenizer(prompt, return_tensors="pt").to(model.device)
-    output = model.generate(**input_ids, max_length=512)
+    input_ids = tokenizer(prompt, return_tensors="pt",
+                          truncation=True, max_length=15000).to(model.device)
+    output = model.generate(**input_ids, max_new_tokens=1024)
     return tokenizer.decode(output[0], skip_special_tokens=True)[len(prompt):]
 
 
