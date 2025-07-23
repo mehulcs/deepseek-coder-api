@@ -31,8 +31,8 @@ jobs:
       - name: Call external API for review
         id: review_api
         run: |
-          echo "${{ steps.pr_diff.outputs.diff }}" > diff.txt
-          PROMPT=$(echo "You are a senior software engineer reviewing a pull request. Below is the diff of the PR. Your task is to provide clear, constructive, and specific code review comments that could help the author improve the code.\n$(cat diff.txt)" | jq -Rs .)
+          echo "$DIFF" > diff.txt
+          PROMPT=$(echo "You are a senior software engineer reviewing a pull request. Below is the diff of the PR. Your task is to provide clear, constructive, and specific code review comments that could help the author improve the code.\n $(cat diff.txt)" | jq -Rs .)
 
           RESPONSE=$(curl -s -X POST https://api.runpod.ai/v2/x3oz7vmgh6c1k3/runsync \
             -H "Authorization: Bearer ${{ secrets.RUNPOD_TOKEN }}" \
