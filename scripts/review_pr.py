@@ -11,7 +11,7 @@ if not diff.strip():
 prompt = f"You are a senior software engineer reviewing a pull request. Below is the diff of the PR. Your task is to provide clear, constructive, and specific code review comments that could help the author improve the code. \n\n{diff}"
 
 # Prepare API call
-url = "https://api.runpod.ai/v2/x3oz7vmgh6c1k3/runsync"
+url = "https://api.runpod.ai/v2/thu6ds8heavkn1/runsync"
 headers = {
     "Authorization": f"Bearer {os.environ.get('RUNPOD_TOKEN')}",
     "Content-Type": "application/json"
