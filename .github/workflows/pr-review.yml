@@ -1,4 +1,3 @@
-# .github/workflows/pr-review.yml
 name: PR Review Commenter
 
 on:
@@ -21,30 +20,17 @@ jobs:
       - name: Get PR diff
         id: pr_diff
         run: |
-          DIFF=$(gh pr diff "${{ github.event.pull_request.number }}" --repo ${{ github.repository }})
           echo "diff<<EOF" >> $GITHUB_OUTPUT
-          echo "$DIFF" >> $GITHUB_OUTPUT
+          gh pr diff "${{ github.event.pull_request.number }}" --repo "${{ github.repository }}" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Call external API for review
+      - name: Run Python review script
         id: review_api
-        run: |
-          echo "$DIFF" > diff.txt
-          PROMPT=$(echo "You are a senior software engineer reviewing a pull request. Below is the diff of the PR. Your task is to provide clear, constructive, and specific code review comments that could help the author improve the code.\n $(cat diff.txt)" | jq -Rs .)
-
-          echo "Prompt $PROMPT"
-
-          RESPONSE=$(curl -s -X POST https://api.runpod.ai/v2/x3oz7vmgh6c1k3/runsync \
-            -H "Authorization: Bearer ${{ secrets.RUNPOD_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d "{\"input\": {\"prompt\": $PROMPT}}")
-
-          echo "Full response: $RESPONSE"
-          COMMENT=$(echo "$RESPONSE" | jq -r '.output.result')
-          echo "comment=$COMMENT" >> $GITHUB_OUTPUT
+        run: python3 scripts/review_pr.py
         env:
+          DIFF: ${{ steps.pr_diff.outputs.diff }}
           RUNPOD_TOKEN: ${{ secrets.RUNPOD_TOKEN }}
 
       - name: Post comment on PR
