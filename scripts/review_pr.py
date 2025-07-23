@@ -8,8 +8,8 @@ if not diff.strip():
     exit(1)
 
 # Build prompt
-prompt = f"You are a senior software engineer reviewing a pull request. Below is the diff of the PR. Your task is to provide clear, constructive, and specific code review comments that could help the author improve the code. Give multiple comments list mentioning filename, if needed give example code snippets. \n\n{diff}"
-
+prompt = f"You are a senior software engineer reviewing a pull request. Below is the diff of the PR. Your task is to provide clear, constructive, and specific code review comments that could help the author improve the code. Give human readable list of comments explaining improvements by specifying filepath. \n\n{diff}"
+print(prompt)
 # Prepare API call
 url = "https://api.runpod.ai/v2/thu6ds8heavkn1/runsync"
 headers = {
