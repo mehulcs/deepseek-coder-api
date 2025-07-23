@@ -23,6 +23,7 @@ try:
     response = requests.post(url, headers=headers, json=payload)
     response.raise_for_status()
     data = response.json()
+    print(data)
     comment = data.get("output", {}).get("result", "")
 
     if not comment:
