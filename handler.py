@@ -1,6 +1,5 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import runpod
-import torch
 import os
 
 
@@ -9,13 +8,16 @@ def generate_code(prompt: str) -> str:
     os.makedirs(cache_dir, exist_ok=True)
 
     tokenizer = AutoTokenizer.from_pretrained(
-        "deepseek-ai/deepseek-coder-6.7b-instruct", trust_remote_code=True, cache_dir=cache_dir)
+        "TheBloke/deepseek-coder-33B-instruct-GPTQ", cache_dir=cache_dir)
     model = AutoModelForCausalLM.from_pretrained(
-        "deepseek-ai/deepseek-coder-6.7b-instruct", trust_remote_code=True, torch_dtype=torch.bfloat16, cache_dir=cache_dir).cuda()
+        "TheBloke/deepseek-coder-33B-instruct-GPTQ", device_map="auto", trust_remote_code=False, revision="main", cache_dir=cache_dir)
 
-    input_ids = tokenizer(prompt, return_tensors="pt",
-                          truncation=True, max_length=15000).to(model.device)
-    output = model.generate(**input_ids, max_new_tokens=1024)
+    input_ids = tokenizer(prompt, return_tensors='pt',
+                          truncation=True, max_length=15000).input_ids.cuda()
+
+    output = model.generate(inputs=input_ids, temperature=0.7,
+                            do_sample=True, top_p=0.95, top_k=40, max_new_tokens=1024)
+
     return tokenizer.decode(output[0], skip_special_tokens=True)[len(prompt):]
 
 

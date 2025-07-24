@@ -1,6 +1,5 @@
-torch>=2.0
 tokenizers>=0.14.0
-transformers==4.41.1
+transformers==4.37.2
 huggingface_hub==0.23.0
 accelerate
 sympy==1.12
@@ -8,3 +7,5 @@ pebble
 timeout-decorator 
 attrdict
 runpod
+optimum==1.26.1
+peft==0.10.0
